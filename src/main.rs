@@ -1,15 +1,8 @@
-mod benchmark;
-mod cli;
-mod optimizer;
-mod state;
-mod system;
-mod ui;
+//! MinWin's executable entry point.
+//!
+//! All this does is hand control to the CLI layer and translate a MinWin error
+//! into a clean message plus an exit code. Nothing else lives here.
 
-fn main() -> anyhow::Result<()> {
-    let arguments = cli::Arguments::parse();
-
-    match arguments.command {
-        Some(command) => cli::run(command),
-        None => ui::run().map_err(|error| anyhow::anyhow!(error.to_string())),
-    }
+fn main() -> std::process::ExitCode {
+    minwin::cli::main()
 }
