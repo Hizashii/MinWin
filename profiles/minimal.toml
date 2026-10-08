@@ -1,0 +1,49 @@
+#
+# MinWin — minimal profile
+#
+# A profile selects from the changes MinWin implements. It cannot describe an
+# action of its own: there is no field here for a command, a script, a registry
+# path or a service name. Each entry names a change id that MinWin already
+# implements, inspects, verifies and can roll back, and says whether to apply
+# it. Run `minwin apply minimal --dry-run` to see exactly what each one would
+# do on your machine before anything is written.
+#
+schema_version = 1
+
+[profile]
+id = "minimal"
+name = "Minimal"
+description = "Reduce unnecessary background activity while preserving normal Windows functionality."
+notes = """
+Conservative by design. Both enabled changes are reversible, use a documented
+Windows mechanism, and leave every security feature, driver and Windows Update
+untouched.
+
+How this differs from the gaming profile: minimal does not change the power
+plan, so battery life and thermals are unaffected. It offers the SysMain change
+as an opt-in, which gaming does not offer at all.
+"""
+
+# Windows diagnostic data collection starts automatically at boot and runs
+# continuously. Moving it to Manual stops it starting on its own; Windows can
+# still start it on demand. Not applied on domain-joined or Defender for
+# Endpoint devices, where management tooling may depend on it.
+[[changes]]
+id = "telemetry.diagtrack_start_type"
+enabled = true
+
+# By default Windows uploads update content to other machines on the local
+# network. HTTP-only mode stops the peer-to-peer traffic. Windows Update itself
+# continues to work normally.
+[[changes]]
+id = "update.delivery_optimization_download_mode"
+enabled = true
+
+# Offered, not applied. Disabling prefetch is the one change here that can make
+# a machine feel slower rather than lighter, and the outcome depends on your
+# storage and RAM. Set `enabled = true` only if you intend to benchmark before
+# and after and judge the result for yourself.
+[[changes]]
+id = "memory.sysmain_start_type"
+enabled = false
+note = "Opt-in. Benchmark before and after; on a slow drive or with limited RAM this is likely to hurt."

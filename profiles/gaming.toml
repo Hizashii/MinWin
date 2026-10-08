@@ -1,0 +1,48 @@
+#
+# MinWin — gaming profile
+#
+# The goal is not "maximum FPS at any cost". It is to reduce avoidable
+# background work while leaving drivers, networking, audio, Windows Update and
+# every security feature exactly as they were.
+#
+# MinWin does not measure frame rates, so this profile makes no claim about
+# game performance. It reports what it changed and what that costs you.
+#
+schema_version = 1
+
+[profile]
+id = "gaming"
+name = "Gaming"
+description = "Reduce avoidable background work while preserving stability, drivers, networking, updates and security."
+notes = """
+Deliberately overlaps with the minimal profile: the two telemetry and update
+delivery changes are identical, because background uploads and diagnostic
+uploads are exactly the kind of unscheduled work that interrupts a game.
+
+How this differs from minimal:
+  * Adds the High performance power plan, so cores do not park and unpark
+    between frames. This costs battery life, heat and fan noise, and is skipped
+    automatically on devices where that plan does not exist.
+  * Does not offer the SysMain change. Prefetching generally helps game and
+    level loading, so turning it off is counterproductive here.
+
+Not touched, on purpose: audio services, networking, GPU driver services,
+Windows Update, Windows security, and Xbox or Game Pass functionality. Game Bar
+and Game DVR are left alone because plenty of people use them.
+"""
+
+# Switch the active power plan. Needs no administrator rights, takes effect
+# immediately, and is undone by selecting the previous plan again.
+[[changes]]
+id = "power.active_plan_high_performance"
+enabled = true
+note = "Costs battery life and fan noise. Skipped automatically if the plan is not installed."
+
+# Same two changes as the minimal profile.
+[[changes]]
+id = "telemetry.diagtrack_start_type"
+enabled = true
+
+[[changes]]
+id = "update.delivery_optimization_download_mode"
+enabled = true

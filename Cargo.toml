@@ -1,17 +1,55 @@
 [package]
-name = "MinWin"
+name = "minwin"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.85"
+description = "Experimental Windows 11 optimisation tool that measures first, explains every change, and can roll it back."
+license = "MIT"
+repository = "https://github.com/"
+publish = false
+
+[[bin]]
+name = "minwin"
+path = "src/main.rs"
+
+[lib]
+name = "minwin"
+path = "src/lib.rs"
 
 [dependencies]
 anyhow = "1.0.104"
+chrono = { version = "0.4.42", default-features = false, features = ["clock", "serde", "std"] }
 clap = { version = "4.6.7", features = ["derive"] }
-eframe = { version = "0.33.0", default-features = false, features = ["default_fonts", "glow"] }
-egui = "0.33.0"
 rusqlite = { version = "0.40.2", features = ["bundled"] }
 serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.145"
 thiserror = "2.0.21"
 toml = "1.1.6"
 tracing = "0.1.44"
-tracing-subscriber = "0.3.23"
-windows = { version = "0.62.2", features = ["Win32_System_SystemInformation", "Win32_System_ProcessStatus", "Win32_System_Threading", "Win32_System_Services", "Win32_System_Registry", "Win32_Foundation"] }
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "fmt"] }
+
+# Every real Windows call lives behind the `sys` traits, so the crate still
+# compiles (and the pure logic still tests) on non-Windows hosts.
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62.2", features = [
+    "Wdk_System_SystemServices",
+    "Win32_Foundation",
+    "Win32_NetworkManagement_NetManagement",
+    "Win32_Security",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Com",
+    "Win32_System_Power",
+    "Win32_System_ProcessStatus",
+    "Win32_System_Registry",
+    "Win32_System_Services",
+    "Win32_System_SystemInformation",
+    "Win32_System_SystemServices",
+    "Win32_System_Threading",
+    "Win32_UI_Shell",
+] }
+
+[dev-dependencies]
+tempfile = "3.24.0"
+
+[profile.release]
+strip = true
